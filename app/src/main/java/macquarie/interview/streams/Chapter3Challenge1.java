@@ -2,6 +2,7 @@ package macquarie.interview.streams;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -103,15 +104,21 @@ public class Chapter3Challenge1 {
         float avg = totalDevSalary / numberOfDevs;
         System.out.println("sum of salary = " + avg);
 
-        Map<String, Float> jobTitleAvgSalMap = employees
-                .stream()
-                .collect(Collectors.groupingBy(employee -> employee.jobTitle))
+        Map<String, Float> jobTitleAvgSalMap = employees.stream()
+                .collect(Collectors.groupingBy(e -> e.jobTitle))
                 .entrySet()
                 .stream()
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        v -> v.getValue().stream().map(e -> e.salary).reduce(0f, Float::sum) / (long) v.getValue().size()
-                ));
+                .collect(Collectors
+                        .toMap(Map.Entry::getKey,
+                                v -> v.getValue()
+                                        .stream()
+                                        .map(e -> e.salary)
+                                        .reduce(0f, Float::sum) / v.getValue().size()))
+                .entrySet()
+                .stream()
+                .sorted((a, b) -> b.getValue().compareTo(a.getValue()))
+                .limit(2)
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 
         System.out.println("avg of all salaries per job title = " + jobTitleAvgSalMap);
     }
