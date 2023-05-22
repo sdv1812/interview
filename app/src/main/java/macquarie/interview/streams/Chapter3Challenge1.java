@@ -1,10 +1,6 @@
 package macquarie.interview.streams;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Chapter3Challenge1 {
@@ -121,5 +117,19 @@ public class Chapter3Challenge1 {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 
         System.out.println("avg of all salaries per job title = " + jobTitleAvgSalMap);
+
+        Map<String, Float> jobTitleAvgSalMapSortedByTitle = employees.stream()
+                .collect(Collectors.groupingBy(e -> e.jobTitle))
+                .entrySet()
+                .stream()
+                .collect(Collectors
+                        .toMap(Map.Entry::getKey,
+                                v -> v.getValue()
+                                        .stream()
+                                        .map(e -> e.salary)
+                                        .reduce(0f, Float::sum) / v.getValue().size(),
+                                (e1, e2) -> e1,
+                                TreeMap::new));
+        System.out.println("avg of all salaries per job title sorted by title= " + jobTitleAvgSalMapSortedByTitle);
     }
 }
